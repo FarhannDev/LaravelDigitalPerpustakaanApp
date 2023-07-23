@@ -5,8 +5,6 @@ namespace App\Http\Livewire\Dashboard\Book;
 use Livewire\Component;
 use App\Models\Book;
 use App\Models\CategoryBook;
-use DateTime;
-use Illuminate\Support\Facades\Hash;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
 
@@ -22,7 +20,7 @@ class BookAdd extends Component
     public $total_books;
     public $upload_pdf;
     public $upload_cover;
-    public $status = true;
+    public $status;
 
     public $book_cover = null;
     public $book_file_pdf = null;
@@ -66,7 +64,7 @@ class BookAdd extends Component
 
         $this->validate();
 
-        if (!is_null($this->upload_cover ||  $this->upload_pdf)) {  // FILE OR IMAGE?
+        if ($this->upload_cover ||  $this->upload_pdf) {  // FILE OR IMAGE?
             $this->book_cover = date('Y_m_d') . '_' .  'cover_' . $this->isbn . '.png';
             $this->book_file_pdf =  date('Y_m_d') . '_' .  'pdf_' . base64_encode($this->upload_pdf) . '.pdf';
 
@@ -81,9 +79,9 @@ class BookAdd extends Component
             'description'     => $this->description,
             'isbn'            => $this->isbn,
             'total_books'     => $this->total_books,
-            'is_status'       => $this->status ? 'publish' : 'unpublish',
-            'upload_pdf'      => $this->upload_pdf ? $this->book_file_pdf : !!$this->book_file_pdf,
-            'upload_cover'    => $this->upload_cover ? $this->book_cover : !!$this->book_cover,
+            'is_status'       => $this->status,
+            'upload_pdf'      => $this->upload_pdf ? $this->book_file_pdf : null,
+            'upload_cover'    => $this->upload_cover ? $this->book_cover : null,
             'category_book_id' => $this->category,
             'created_at'      => new \DateTime(),
             'updated_at'      => new \DateTime(),

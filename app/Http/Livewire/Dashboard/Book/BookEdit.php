@@ -18,9 +18,9 @@ class BookEdit extends Component
     public $category;
     public $isbn;
     public $total_books;
-    public $upload_pdf;
-    public $upload_cover;
-    public $status = true;
+    public $upload_pdf = null;
+    public $upload_cover = null;
+    public $status;
 
     public $book_cover = null;
     public $book_file_pdf = null;
@@ -40,23 +40,23 @@ class BookEdit extends Component
             $this->category = $book->category_book_id;
             $this->isbn = $book->isbn;
             $this->total_books = $book->total_books;
-            $this->upload_pdf = $book->upload_pdf;
-            $this->upload_cover = $book->upload_cover;
+            // $this->upload_pdf = $book->upload_pdf;
+            // $this->upload_cover = $book->upload_cover;
             $this->status = $book->is_status;
 
-            $this->book_cover_original = asset('storage/upload/cover/' . $book->upload_cover);
-            $this->book_file_pdf_original = asset('storage/upload/file/' . $book->upload_pdf);
+            // $this->book_cover_original = asset('storage/upload/cover/' . $book->upload_cover);
+            // $this->book_file_pdf_original = asset('storage/upload/file/' . $book->upload_pdf);
         }
     }
 
 
     protected $rules = [
         'title'  => 'required|string|min:3|max:120',
-        'isbn'   => 'required|string|max:11',
+        // 'isbn'   => 'required|string|max:11',
         'total_books' => 'required',
         'category' => 'required',
-        'upload_pdf' => 'file|mimes:pdf|max:2048',
-        'upload_cover' => 'image|mimes:jpeg,jpg,png|max:2048',
+        'upload_pdf' => 'nullable|file|mimes:pdf|max:2048',
+        'upload_cover' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
 
     ];
 
@@ -87,39 +87,49 @@ class BookEdit extends Component
     {
         $this->validate();
 
-        if (!is_null($this->book_id)) {
-            $book = Book::where('slug', $this->book_id)->first();
+        $book = Book::where('slug', $this->book_id)->first();
 
-            if (!is_null($this->upload_cover ||  $this->upload_pdf)) {  // FILE OR IMAGE?
-                $this->book_cover = base64_encode($this->upload_cover) . '.png';
-                $this->book_file_pdf =  base64_encode($this->upload_pdf) . '.pdf';
-
-                // Remove upload file from storage
-                \File::delete('storage/upload/file/' . $book->upload_pdf);
+        if ($this->upload_cover || $this->upload_pdf) {
+            if (\File::exists('storage/upload/cover/' . $book->upload_cover)) {
                 \File::delete('storage/upload/cover/' . $book->upload_cover);
+                \File::delete('storage/upload/file/' . $book->upload_pdf);
+
+                $this->book_cover = date('Y_m_d') . '_' .  'cover_' . $this->isbn . '.png';
+                $this->book_file_pdf =  date('Y_m_d') . '_' .  'pdf_' . base64_encode($this->upload_pdf) . '.pdf';
+                // $this->book_cover = base64_encode($this->upload_cover) . '.png';
+                // $this->book_file_pdf =  base64_encode($this->upload_pdf) . '.pdf';
 
                 // UPLOAD IMAGE OR FILE TO STORAGE
-                $this->upload_cover->storeAs('public/upload/cover/', $this->book_cover);
-                $this->upload_pdf->storeAs('public/upload/file/', $this->book_file_pdf);
+
+                if ($this->upload_cover) {
+                    $this->upload_cover->storeAs('public/upload/cover/', $this->book_cover);
+                }
+
+                if ($this->upload_pdf) {
+                    $this->upload_pdf->storeAs('public/upload/file/', $this->book_file_pdf);
+                }
             }
-
-            $book->update([
-                'title'           => $this->title,
-                'slug'            => \Str::slug($this->title, '-'),
-                'description'     => $this->description,
-                'isbn'            => $this->isbn,
-                'total_books'     => $this->total_books,
-                'is_status'       => $this->status ? 'publish' : 'unpublish',
-                'upload_pdf'      => $this->upload_pdf ? $this->book_file_pdf : $book->upload_pdf,
-                'upload_cover'    => $this->upload_cover ? $this->book_cover : $book->upload_cover,
-                'category_book_id' => $this->category,
-                'updated_at'      => new \DateTime(),
-            ]);
-
-            return redirect()
-                ->route('dashboard.book.index')
-                ->with('message_success', 'Buku' . $book->title . ' berhasil diperbarui');
+        } else {
+            $this->book_cover_original = $book->upload_cover;
+            $this->book_file_pdf_original = $book->upload_pdf;
         }
+
+        $book->update([
+            'title'           => $this->title,
+            'slug'            => \Str::slug($this->title, '-'),
+            'description'     => $this->description,
+            'isbn'            => $this->isbn,
+            'total_books'     => $this->total_books,
+            'is_status'       => $this->status,
+            'upload_pdf'      => $this->upload_pdf ? $this->book_file_pdf : $this->book_file_pdf_original,
+            'upload_cover'    => $this->upload_cover ? $this->book_cover : $this->book_cover_original,
+            'category_book_id' => $this->category,
+            'updated_at'      => new \DateTime(),
+        ]);
+
+        return redirect()
+            ->route('dashboard.book.index')
+            ->with('message_success', 'Buku' . $book->title . ' berhasil diperbarui');
     }
 
     public function render()

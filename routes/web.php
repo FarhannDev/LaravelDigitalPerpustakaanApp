@@ -9,6 +9,7 @@ use App\Http\Livewire\Dashboard\Book\BookIndex;
 use App\Http\Livewire\Dashboard\Book\BookPreview;
 use App\Http\Livewire\Dashboard\DashboardIndex;
 use App\Http\Livewire\Dashboard\User\UserAdd;
+use App\Http\Livewire\Dashboard\User\UserEdit;
 use App\Http\Livewire\Dashboard\User\UserIndex;
 use App\Http\Livewire\Dashboard\User\UserPetugasAdd;
 use App\Http\Livewire\Dashboard\User\UserPetugasEdit;
@@ -77,6 +78,7 @@ Route::middleware(['auth', 'user-access:adminstrator'])->prefix('dashboard')->gr
 
     Route::get('user/add', UserAdd::class)->name('dashboard.user.add');
     Route::get('user/{userId}', UserIndex::class)->name('dashboard.user.preview');
+    Route::get('user/{userId}/edit', UserEdit::class)->name('dashboard.user.edit');
 });
 
 
@@ -87,7 +89,6 @@ Route::middleware(['auth', 'user-access:anggota'])->prefix('user')->group(functi
     Route::get('book/{slug}', UserBookShow::class)->name('user.book.show');
     Route::get('profile', UserEditProfil::class)->name('user.profile');
 });
-// Route::middleware(['auth', 'user-access:anggota'])->get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
 Route::middleware('auth')->prefix('profile')->group(function () {

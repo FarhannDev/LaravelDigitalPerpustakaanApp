@@ -3,11 +3,11 @@
 namespace App\Http\Livewire\Dashboard\User;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
-class UserAdd extends Component
+class UserEdit extends Component
 {
+    public $userId;
     public $first_name;
     public $last_name;
     public $email;
@@ -19,12 +19,34 @@ class UserAdd extends Component
     // public $password;
     // public $password2;
     public $address;
+    public $status;
+    public $isstatus = false;
 
+
+    public function mount($userId)
+    {
+
+        $user = User::where('uuid', $userId)->first();
+
+        if (!is_null($user)) {
+            $this->userId      = $user->uuid;
+            $this->first_name  = $user->first_name;
+            $this->last_name    = $user->last_name;
+            $this->email        = $user->email;
+            $this->age          = $user->age;
+            $this->gender       = $user->gender;
+            $this->telephone    = $user->telephone;
+            $this->city         = $user->city;
+            $this->province     = $user->province;
+            $this->address      = $user->address;
+            $this->status       = $user->is_status;
+        }
+    }
 
     protected $rules = [
         'first_name' => 'required|min:3|max:50',
         'last_name'  => 'required|min:3|max:50',
-        'email'      => 'required|string|email|max:255|unique:users',
+        'email'      => 'required|string|email|max:255',
         'age'       => 'required',
         'gender'    => 'required',
         'telephone' => 'required',
@@ -48,12 +70,11 @@ class UserAdd extends Component
     }
 
 
-    public function saveOperator()
+    public function saveUsers()
     {
         $this->validate();
 
-        User::create([
-            'uuid'       =>     \Str::uuid(),
+        User::where('uuid', $this->userId)->update([
             'first_name' => $this->first_name,
             'last_name'  => $this->last_name,
             'fullname'   => $this->first_name . ' ' .  $this->last_name,
@@ -63,21 +84,20 @@ class UserAdd extends Component
             'telephone'  => $this->telephone,
             'city'       => $this->city,
             'province'   => $this->province,
-            'password'   => Hash::make('masuk123'), // password
             'address'    => $this->address,
-            'roles'      => 'anggota',
-            'created_at' => new \DateTime(),
+            'is_status'  => $this->isstatus ? 'active' : 'unactive',
             'updated_at' => new \DateTime(),
         ]);
 
         return redirect()
-            ->route('dashboard.user.index')
+            ->route('dashboard.user.operator')
             ->with('message_success', 'Petugas baru ditambahkan');
     }
 
     public function render()
     {
-        return view('livewire.dashboard.user.user-add')
+        return view('livewire.dashboard.user.user-edit')
+
             ->extends('layout.page_layout')
             ->section('content');
     }

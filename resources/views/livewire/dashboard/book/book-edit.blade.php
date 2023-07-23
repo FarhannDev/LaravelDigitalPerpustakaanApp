@@ -48,7 +48,7 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="title">Upload File Buku <span class="text-danger">*</span></label>
+                            <label for="title">Upload File Buku </label>
                             <div class="custom-file">
                                 <input wire:model="upload_pdf" type="file"
                                     class="custom-file-input  @error('upload_pdf') is-invalid @enderror "
@@ -63,7 +63,7 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="slug">Upload Cover Buku <span class="text-danger">*</span></label>
+                            <label for="slug">Upload Cover Buku </label>
                             <div class="custom-file">
                                 <input wire:model="upload_cover" type="file"
                                     class="custom-file-input @error('upload_cover') is-invalid @enderror"
@@ -78,6 +78,24 @@
                                 @enderror
                             </div>
 
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="slug">Status Buku </label>
+                            <select wire:model="status" class="custom-select @error('category')is-invalid @enderror"
+                                wire:model="category">
+                                <option value="">Pilih Status Buku</option>
+                                <option value="publish" {{ $status==='publish' ? 'selected' : '' }}>Diterbitkan</option>
+                                <option value="unpublish" {{ $status==='unpublish' ? 'selected' : '' }}>Tidak
+                                    Diterbitkan
+                                </option>
+                                <option value="draft" {{ $status==='draft' ? 'selected' : '' }}>Disimpan</option>
+
+                            </select>
+
+                            @error('category')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="form-group">

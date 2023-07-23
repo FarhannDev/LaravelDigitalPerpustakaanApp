@@ -33,7 +33,7 @@
                                 <label for="exampleInputEmail1">Cari berdasarkan Kategori</label>
                                 <select wire:model.debounce.500ms="category" class="custom-select text-capitalize"
                                     style="height: 50px; border-radius: 0;">
-                                    <option selected value="">Pilih Kategori</option>
+                                    <option selected value="">Pilih Semua Kategori</option>
                                     @foreach($categories as $category)
                                     <option class="text-capitalize" value="{{ $category->category_name }}">{{
                                         $category->category_name }}</option>
@@ -47,10 +47,10 @@
                                 <label for="exampleInputEmail1">Cari berdasarkan Status</label>
                                 <select wire:model.debounce.500ms="status" class="custom-select"
                                     style="height: 50px; border-radius: 0;">
-                                    <option selected value="">Pilih Status</option>
-                                    <option value="publish">Publish</option>
-                                    <option value="unpublish">Unpublish</option>
-                                    <option value="draft">Draft</option>
+                                    <option selected value="">Pilih Semua Status</option>
+                                    <option value="publish">Diterbitkan</option>
+                                    <option value="unpublish">Tidak Diterbitkan</option>
+                                    <option value="draft">Disimpan</option>
                                 </select>
                             </div>
 
@@ -78,7 +78,7 @@
                                     <th scope="col">Judul</th>
                                     <th scope="col">Kategori</th>
                                     <th scope="col">ISBN</th>
-                                    <th scope="col">Jumlah Halaman</th>
+                                    <th scope="col">Jumlah</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Aksi</th>
                                 </tr>
@@ -88,34 +88,37 @@
                                 @foreach ($items as $item)
                                 <tr>
                                     <!-- <th class="col-1">{{ $loop->index + 1 }}</th> -->
-                                    <th class="col-1">{{$items->currentPage() * $items->perPage() -
+                                    <th class="col-1 text-dark text-start">{{$items->currentPage() * $items->perPage() -
                                         $items->perPage() + 1 +$loop->index}}
                                     </th>
-                                    <td class="col-3">
-                                        <a href="" aria-label="detail buku" class="text-dark text-decoration-none p-0">
-                                            {{ $item->title }}
-                                        </a>
+                                    <td class="col-3 text-dark text-start">
+                                        {{ $item->title }}
                                     </td>
-                                    <td class="col-2">{{ $item->category['category_name'] }}</td>
-                                    <td class="col-2">{{ $item->isbn }}</td>
-                                    <td class="col-2">{{ $item->total_books }} Halaman</td>
-                                    <td class="col-1">
+                                    <td class="col-2 text-dark text-start">{{ $item->category['category_name'] }}</td>
+                                    <td class="col-2 text-dark text-start">{{ $item->isbn }}</td>
+                                    <td class="col-2 text-dark text-start">{{ $item->total_books }} Buku</td>
+                                    <td class="col-2 text-dark text-start">
                                         @if ($item->is_status === 'publish')
-                                        <p class="text-success text-capitalize text-start">{{ $item->is_status }}</p>
+                                        <p class="text-success text-capitalize text-start">Diterbitkan</p>
+                                        @elseif($item->is_status === 'unpublish')
+                                        <p class="text-danger text-capitalize text-start">
+                                            Tidak Diterbitkan
+
+                                        </p>
                                         @else
-                                        <p class="text-danger text-capitalize text-start">{{ $item->is_status }}</p>
+                                        <p class="text-danger text-capitalize text-start">Disimpan</p>
+
                                         @endif
                                     </td>
                                     <td class="col">
                                         <div class="d-flex">
-                                            <button wire:click="delete({{ $item->id }})"
-                                                onclick="return confirm('Apakah kamu yakin menghapus data buku ini?')"
-                                                type="button" title="hapus" class="btn btn-danger btn-md"><i
+                                            <button wire:click="delete({{ $item->id }})" type="button" title="hapus"
+                                                class="btn btn-danger btn-md"><i
                                                     class="fas fa-fw fa-trash"></i></button>
                                             <a aria-label="perbarui"
                                                 href="{{ route('dashboard.book.edit', $item->slug) }}" title="perbarui"
                                                 class="btn btn-danger btn-md ml-2"><i class="fas fa-fw fa-edit"></i></a>
-                                            <a aria-label="Unduh Buku Ini" download
+                                            <a aria-label="Unduh Buku Ini"
                                                 href="{{ asset('/storage/upload/file/'. $item->upload_pdf) }}"
                                                 title="download" class="btn btn-danger btn-md ml-2"><i
                                                     class="fas fa-fw fa-download"></i></a>

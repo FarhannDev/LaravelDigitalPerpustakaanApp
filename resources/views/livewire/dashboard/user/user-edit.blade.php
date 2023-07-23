@@ -5,12 +5,12 @@
             <div class="card rounded-0 shadow-0 mb-3">
                 <div class="card-body">
                     <h5 class="card-title text-start text-uppercase text-dark">
-                        Form Tambah Data Anggota
+                        Form Edit Data Anggota
                     </h5>
 
                     <hr />
 
-                    <form wire:submit.prevent="saveOperator" enctype="multipart/form-data">
+                    <form wire:submit.prevent="saveUsers" enctype="multipart/form-data">
                         @csrf
 
                         <div class="form-row">
@@ -99,6 +99,11 @@
                             @error('address')
                             <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
+                        </div>
+                        <div class="custom-control custom-switch">
+                            <input wire:model="isstatus" type="checkbox" name="is_status" class="custom-control-input"
+                                id="customSwitch1">
+                            <label class="custom-control-label" for="customSwitch1">Nonaktifkan / Aktifkan</label>
                         </div>
 
 

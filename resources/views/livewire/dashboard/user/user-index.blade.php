@@ -91,8 +91,9 @@
                                                 wire:click="deleteUsers({{ $user->id }})" type="button" title="hapus"
                                                 class="btn btn-danger btn-md"><i
                                                     class="fas fa-fw fa-trash"></i></button>
-                                            <a href="" title="perbarui" class="btn btn-danger btn-md ml-2"><i
-                                                    class="fas fa-fw fa-edit"></i></a>
+                                            <a aria-label="perbarui anggota"
+                                                href="{{ route('dashboard.user.edit', $user->uuid) }}" title="perbarui"
+                                                class="btn btn-danger btn-md ml-2"><i class="fas fa-fw fa-edit"></i></a>
 
                                         </div>
                                     </td>
