@@ -18,13 +18,14 @@ class CreateBooksTable extends Migration
             $table->id();
             $table->string('title', 255);
             $table->string('slug', 255);
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('isbn', 255)->unique();
             $table->integer('total_books');
             $table->string('upload_pdf', 255)->nullable();
             $table->string('upload_cover', 255)->nullable();
             $table->enum('is_status', ['publish', 'unpublish', 'draft'])->default('draft');
-            $table->foreignId('category_book_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+
+            $table->foreignId('category_book_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }

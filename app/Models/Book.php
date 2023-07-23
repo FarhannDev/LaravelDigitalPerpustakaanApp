@@ -13,4 +13,9 @@ class Book extends Model
     protected $fillable = [
         'title', 'slug', 'description', 'isbn', 'total_books', 'upload_pdf', 'upload_cover', 'is_status', 'category_book_id'
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(CategoryBook::class, 'category_book_id');
+    }
 }
